@@ -1,9 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+    persistence.xml = la "configuración" de JPA.
+    Le dice a JPA: qué entidades hay, a qué base de datos conectarse y cómo.
+    En Spring Boot esto lo ponías en application.yml (spring.datasource...).
+-->
 <persistence xmlns="https://jakarta.ee/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
              version="3.2">
-    <persistence-unit name="default">
 
+    <!--
+        "Unidad de persistencia" = un paquete de configuración con nombre.
+        El código la busca por nombre: Persistence.createEntityManagerFactory("tiendaPU").
+
+        RESOURCE_LOCAL = las transacciones las manejamos nosotros en el código
+        (begin / commit / rollback). En GlassFish usarías JTA y el servidor las maneja por ti.
+    -->
+    <persistence-unit name="tiendaPU" transaction-type="RESOURCE_LOCAL">
+
+        <!-- Quién implementa JPA: Hibernate -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Las clases @Entity que maneja esta unidad -->
+        <class>dominio.Producto</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+        <properties>
+            <!-- Conexión a la base de datos (H2 en memoria: se borra al apagar Tomcat) -->
+            <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:tienda;DB_CLOSE_DELAY=-1"/>
+            <property name="jakarta.persistence.jdbc.user" value="sa"/>
+            <property name="jakarta.persistence.jdbc.password" value=""/>
+
+            <!-- JPA crea la tabla "productos" leyendo las anotaciones de Producto.
+                 drop-and-create = la borra y la vuelve a crear cada vez que arranca la app. -->
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+
+            <!-- Muestra en la consola de Tomcat el SQL que Hibernate genera.
+                 Míralo mientras usas la página: ahí ves la "traducción" de JPA a SQL. -->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
     </persistence-unit>
 </persistence>
