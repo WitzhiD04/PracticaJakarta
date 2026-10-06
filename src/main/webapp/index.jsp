@@ -16,7 +16,7 @@
 </head>
 <body>
 <main>
-    <h1><%= "Hello World!" %></h1>
+    <h1><%= "Bienvenido mi rey" %></h1>
 
     <a class="tarjeta" href="hello-servlet">
         <b>Hello Servlet →</b>
